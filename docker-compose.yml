@@ -4,13 +4,16 @@ services:
         db:
                 image: mysql:5.7
                 volumes:
-                        - ./devmysql:/var/lib/mysql
+                        - ./.mysql:/var/lib/mysql
                 restart: always
+                env_file:
+                        - .env
                 environment:
-                        MYSQL_ROOT_PASSWORD: toor
-                        MYSQL_DATABASE: toor
-                        MYSQL_USER: toor
-                        MYSQL_PASSWORD: toor
+                        MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+                        MYSQL_DATABASE: ${MYSQL_DATABASE}
+                        MYSQL_USER: ${MYSQL_USER}
+                        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+                container_name: wordpress-mysql5.7
         wordpress:
                 depends_on:
                         - db
@@ -24,6 +27,7 @@ services:
                 restart: always
                 environment:
                         WORDPRESS_DB_HOST: db:3306
-                        WORDPRESS_DB_USER: toor
-                        WORDPRESS_DB_PASSWORD: toor
-                        WORDPRESS_DB_NAME: toor
+                        WORDPRESS_DB_USER: ${MYSQL_USER}
+                        WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+                        WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+                container_name: wordpress
