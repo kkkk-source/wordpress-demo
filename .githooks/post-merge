@@ -38,16 +38,16 @@ then
 	exit 1
 fi
 
-echo git: post-merge: wait til the local database \'$db_docker_image_name\' and the backup \'$db_backup_file\' are merged.
+echo git: post-merge: wait until the local database \'$db_docker_image_name\' and the backup \'$db_backup_file\' are merged.
 cat $db_backup_file | docker exec -i $db_docker_image_name \
-	/usr/bin/mysql                   \
-	-u${env["MYSQL_USER"]}           \
-	-p${env["MYSQL_ROOT_PASSWORD"]}  \
+	/usr/bin/mysql                                     \
+	-u${env["MYSQL_USER"]}                             \
+	-p${env["MYSQL_ROOT_PASSWORD"]}                    \
 	${env["MYSQL_DATABASE"]} 2> /dev/null
 
 if [ "$?" -ne 0 ]
 then
-	echo git: post-merge: could not execute \'docker exec $db_docker_image_name [...]\'.
+	echo git: post-merge: could not execute \'docker exec -i $db_docker_image_name [...]\'.
 	exit 1
 fi
 

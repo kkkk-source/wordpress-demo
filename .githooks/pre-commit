@@ -37,7 +37,7 @@ then
 	exit 1
 fi
 
-echo git: pre-commit: wait til the database \'$db_backup_file\' backup is ready.
+echo git: pre-commit: wait until the database \'$db_backup_file\' backup is ready.
 docker exec $db_docker_image_name       \
 	/usr/bin/mysqldump               \
 	--no-tablespaces                 \
