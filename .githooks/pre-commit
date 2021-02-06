@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This hook script make and add a database backup to the current commit.
 # You must have the database docker  image runnig to continue, otherwise 
@@ -38,10 +38,10 @@ then
 fi
 
 echo git: pre-commit: wait until the database \'$db_backup_file\' backup is ready.
-docker exec $db_docker_image_name       \
+docker exec $db_docker_image_name        \
 	/usr/bin/mysqldump               \
 	--no-tablespaces                 \
-	-u${env["MYSQL_USER"]}           \
+	-u ${env["MYSQL_USER"]}          \
 	-p${env["MYSQL_ROOT_PASSWORD"]}  \
 	${env["MYSQL_DATABASE"]} > $db_backup_file 2> /dev/null
 
