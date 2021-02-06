@@ -1,0 +1,46 @@
+#!/bin/sh
+
+docker_image_name="wordpress-mysql5.7"
+db_backup_file="./mysql/backup.sql"
+env_file=".env"
+declare -A env
+
+while IFS="=" read -r KEY VALUE
+do
+	env[$KEY]=$VALUE
+done < $env_file
+
+if [ "$?" -ne 0 ]; then
+	echo git: post-merge: could not find environment file \'$env_file\' in project\'s root.
+	exit 1
+fi
+
+docker >/dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+	echo git: post-merge: could not execute \'docker\' on this machine. 
+	echo git: post-merge: make sure you have docker correctly installed.
+	exit 1
+fi
+
+docker ps --format "{{.Names}}" | grep $docker_image_name > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+	echo git: post-merge: docker image container \'$docker_image_name\' is not runnig.
+	echo git: post-merge: make sure \'$docker_image_name\' is up to proceed to commit.
+	exit 1
+fi
+
+cat backup.sql | docker exec -i wordpress-demo_db_1 /usr/bin/mysql -u toor --password=toor toor
+
+echo git: post-merge: wait til the database backup is ready.
+cat $db_backup_file | docker exec -i $docker_image_name \
+	/usr/bin/mysql                   \
+	-u${env["MYSQL_USER"]}           \
+	-p${env["MYSQL_ROOT_PASSWORD"]}  \
+	  ${env["MYSQL_DATABASE"]} 2> /dev/null
+
+if [ "$?" -ne 0 ]; then
+	echo git: post-merge: could not execute \'docker exec $docker_image_name [...]\'.
+	exit 1
+fi
+
+exit 0

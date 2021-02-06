@@ -1,8 +1,5 @@
 #!/bin/sh
 #
-# This was made in order to work with multiple people in the same 
-# WordPress installation. Use this in .git/hooks/pre-commit.
-#
 # This hook script make and add a database backup to the current commit.
 # You must have the database docker  image runnig to continue, otherwise 
 # the commit will fail.  It reads from the .env file to get the database 
@@ -33,7 +30,7 @@ fi
 docker ps --format "{{.Names}}" | grep $docker_image_name > /dev/null 2>&1
 if [ "$?" -ne 0 ]; then
 	echo git: pre-commit: docker image container \'$docker_image_name\' is not runnig.
-	echo git: pre-commit: make sure it is up to proceed to commit.
+	echo git: pre-commit: make sure \'$docker_image_name\' is up to proceed to commit.
 	exit 1
 fi
 
