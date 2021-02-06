@@ -35,7 +35,7 @@ if [ "$?" -ne 0 ]; then
 fi
 
 echo git: pre-commit: wait til the database backup is ready.
-docker exec $docker_image_name           \
+docker exec $docker_image_name          \
 	/usr/bin/mysqldump               \
 	--no-tablespaces                 \
 	-u${env["MYSQL_USER"]}           \
