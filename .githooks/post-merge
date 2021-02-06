@@ -29,8 +29,6 @@ if [ "$?" -ne 0 ]; then
 	exit 1
 fi
 
-cat backup.sql | docker exec -i wordpress-demo_db_1 /usr/bin/mysql -u toor --password=toor toor
-
 echo git: post-merge: wait til the database backup is ready.
 cat $db_backup_file | docker exec -i $docker_image_name \
 	/usr/bin/mysql                   \
