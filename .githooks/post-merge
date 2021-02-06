@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This hook script merge the local and the backup database in order that 
 # all developers' databases  are consistent. You must have  the database 
@@ -41,7 +41,7 @@ fi
 echo git: post-merge: wait until the local database \'$db_docker_image_name\' and the backup \'$db_backup_file\' are merged.
 cat $db_backup_file | docker exec -i $db_docker_image_name \
 	/usr/bin/mysql                                     \
-	-u${env["MYSQL_USER"]}                             \
+	-u ${env["MYSQL_USER"]}                            \
 	-p${env["MYSQL_ROOT_PASSWORD"]}                    \
 	${env["MYSQL_DATABASE"]} 2> /dev/null
 
