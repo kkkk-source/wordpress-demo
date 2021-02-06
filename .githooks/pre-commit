@@ -40,7 +40,7 @@ docker exec $docker_image_name           \
 	--no-tablespaces                 \
 	-u${env["MYSQL_USER"]}           \
 	-p${env["MYSQL_ROOT_PASSWORD"]}  \
-	  ${env["MYSQL_DATABASE"]} > $db_backup_file 2> /dev/null
+	${env["MYSQL_DATABASE"]} > $db_backup_file 2> /dev/null
 
 if [ "$?" -ne 0 ]; then
 	echo git: pre-commit: could not execute \'docker exec $docker_image_name [...]\'.

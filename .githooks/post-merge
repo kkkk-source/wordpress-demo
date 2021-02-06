@@ -36,7 +36,7 @@ cat $db_backup_file | docker exec -i $docker_image_name \
 	/usr/bin/mysql                   \
 	-u${env["MYSQL_USER"]}           \
 	-p${env["MYSQL_ROOT_PASSWORD"]}  \
-	  ${env["MYSQL_DATABASE"]} 2> /dev/null
+	${env["MYSQL_DATABASE"]} 2> /dev/null
 
 if [ "$?" -ne 0 ]; then
 	echo git: post-merge: could not execute \'docker exec $docker_image_name [...]\'.
