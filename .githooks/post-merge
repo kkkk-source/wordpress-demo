@@ -18,7 +18,7 @@ done < $env_file
 
 if [ "$?" -ne 0 ]
 then
-	echo git: post-merge: could not find environment file \'$env_file\' in project\'s root.
+	echo git: post-merge: could not find environment file \'$env_file\' in the project root.
 	exit 1
 fi
 

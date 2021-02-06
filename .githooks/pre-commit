@@ -17,7 +17,7 @@ done < $env_file
 
 if [ "$?" -ne 0 ]
 then
-	echo git: pre-commit: could not find environment file \'$env_file\' in project\'s root.
+	echo git: pre-commit: could not find environment file \'$env_file\' in the project root.
 	exit 1
 fi
 
