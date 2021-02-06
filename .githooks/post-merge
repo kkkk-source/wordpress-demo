@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# This hook script merge the local and the backup database in order that 
+# all developers' databases  are consistent. You must have  the database 
+# docker image runnig to continue, otherwise the pull request will fail.  
+# It reads from the .env file to get the database credentials, if the file 
+# doesn't exist, the pull request will fail as well.
 
 db_docker_image_name="wordpress-mysql5.7"
 db_backup_file="./mysql/backup.sql"
@@ -10,20 +16,23 @@ do
 	env[$KEY]=$VALUE
 done < $env_file
 
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: post-merge: could not find environment file \'$env_file\' in project\'s root.
 	exit 1
 fi
 
 docker >/dev/null 2>&1
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: post-merge: could not execute \'docker\' on this machine. 
 	echo git: post-merge: make sure you have docker correctly installed.
 	exit 1
 fi
 
 docker ps --format "{{.Names}}" | grep $db_docker_image_name > /dev/null 2>&1
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: post-merge: docker image container \'$db_docker_image_name\' is not runnig.
 	echo git: post-merge: make sure \'$db_docker_image_name\' is up  to proceed  pulling.
 	exit 1
@@ -36,7 +45,8 @@ cat $db_backup_file | docker exec -i $db_docker_image_name \
 	-p${env["MYSQL_ROOT_PASSWORD"]}  \
 	${env["MYSQL_DATABASE"]} 2> /dev/null
 
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: post-merge: could not execute \'docker exec $db_docker_image_name [...]\'.
 	exit 1
 fi

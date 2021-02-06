@@ -15,41 +15,46 @@ do
 	env[$KEY]=$VALUE
 done < $env_file
 
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: pre-commit: could not find environment file \'$env_file\' in project\'s root.
 	exit 1
 fi
 
 docker >/dev/null 2>&1
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: pre-commit: could not execute \'docker\' on this machine. 
 	echo git: pre-commit: make sure you have docker correctly installed.
 	exit 1
 fi
 
 docker ps --format "{{.Names}}" | grep $db_docker_image_name > /dev/null 2>&1
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: pre-commit: docker image container \'$db_docker_image_name\' is not runnig.
 	echo git: pre-commit: make sure \'$db_docker_image_name\' is up to proceed to commit.
 	exit 1
 fi
 
 echo git: pre-commit: wait til the database \'$db_backup_file\' backup is ready.
-docker exec $db_docker_image_name        \
+docker exec $db_docker_image_name       \
 	/usr/bin/mysqldump               \
 	--no-tablespaces                 \
 	-u${env["MYSQL_USER"]}           \
 	-p${env["MYSQL_ROOT_PASSWORD"]}  \
 	${env["MYSQL_DATABASE"]} > $db_backup_file 2> /dev/null
 
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: pre-commit: could not execute \'docker exec $db_docker_image_name [...]\'.
 	exit 1
 fi
 
 git add $db_backup_file
 
-if [ "$?" -ne 0 ]; then
+if [ "$?" -ne 0 ]
+then
 	echo git: pre-commit: could not execute \'git add $db_backup_file\'.
 	exit 1
 fi
