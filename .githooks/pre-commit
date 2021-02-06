@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# This was made in order to work with multiple people in the same 
+# WordPress installation. Use this in .git/hooks/pre-commit.
+#
+# This hook script make and add a database backup to the current commit.
+# You must have the database docker  image runnig to continue, otherwise 
+# the commit will fail.  It reads from the .env file to get the database 
+# credentials,  if the file doesn't exist, the commit will fail.
+
+docker_image_name="wordpress-mysql5.7"
+db_backup_file="./mysql/backup.sql"
+env_file=".env"
+declare -A env
+
+while IFS="=" read -r KEY VALUE
+do
+	env[$KEY]=$VALUE
+done < $env_file
+
+if [ "$?" -ne 0 ]; then
+	echo git: pre-commit: could not find environment file \'$env_file\' in project\'s root.
+	exit 1
+fi
+
+docker >/dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+	echo git: pre-commit: could not execute \'docker\' on this machine. 
+	echo git: pre-commit: make sure you have docker correctly installed.
+	exit 1
+fi
+
+docker ps --format "{{.Names}}" | grep $docker_image_name > /dev/null 2>&1
+if [ "$?" -ne 0 ]; then
+	echo git: pre-commit: docker image container \'$docker_image_name\' is not runnig.
+	echo git: pre-commit: make sure it is up to proceed to commit.
+	exit 1
+fi
+
+echo git: pre-commit: wait til the database backup is ready.
+docker exec $docker_image_name           \
+	/usr/bin/mysqldump               \
+	--no-tablespaces                 \
+	-u${env["MYSQL_USER"]}           \
+	-p${env["MYSQL_ROOT_PASSWORD"]}  \
+	  ${env["MYSQL_DATABASE"]} > $db_backup_file 2> /dev/null
+
+if [ "$?" -ne 0 ]; then
+	echo git: pre-commit: could not execute \'docker exec $docker_image_name [...]\'.
+	exit 1
+fi
+
+git add $db_backup_file
+
+if [ "$?" -ne 0 ]; then
+	echo git: pre-commit: could not execute \'git add $db_backup_file\'.
+	exit 1
+fi
+
+exit 0
